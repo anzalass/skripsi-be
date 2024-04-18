@@ -6,12 +6,18 @@ import (
 	hAuth "testskripsi/module/feature/auth/handler"
 	rAuth "testskripsi/module/feature/auth/repository"
 	sAuth "testskripsi/module/feature/auth/service"
+	hChat "testskripsi/module/feature/chatbot/handler"
+	rChat "testskripsi/module/feature/chatbot/repository"
+	sChat "testskripsi/module/feature/chatbot/service"
 	hInvoice "testskripsi/module/feature/invoice/handler"
 	rInvoice "testskripsi/module/feature/invoice/repository"
 	sInvoice "testskripsi/module/feature/invoice/service"
 	hPelanggan "testskripsi/module/feature/pelanggan/handler"
 	rPelanggan "testskripsi/module/feature/pelanggan/repository"
 	sPelanggan "testskripsi/module/feature/pelanggan/service"
+	hPengaduan "testskripsi/module/feature/pengaduan/handler"
+	rPengaduan "testskripsi/module/feature/pengaduan/repository"
+	sPengaduan "testskripsi/module/feature/pengaduan/service"
 
 	"testskripsi/routes"
 	"testskripsi/utils"
@@ -48,13 +54,24 @@ func main() {
 	pelangganRepo := rPelanggan.NewPelangganRepository(db)
 	pelangganService := sPelanggan.NewPelangganService(pelangganRepo)
 	pelangganHandler := hPelanggan.NewPelangganHandler(pelangganService)
+
 	invoiceRepo := rInvoice.NewInvoiceRepository(db)
 	InvoiceService := sInvoice.NewInvoiceService(invoiceRepo, pelangganRepo, midtransUtils)
 	InvoiceHandler := hInvoice.NewInvoiceHandler(InvoiceService, midtransUtils)
 
+	pengaduanRepo := rPengaduan.NewPengaduanRepository(db)
+	pengaduanService := sPengaduan.NewPengaduanService(pengaduanRepo, pelangganRepo)
+	pengaduanHandler := hPengaduan.NewPengaduanHandler(pengaduanService)
+
+	chatRepository := rChat.NewChatbotRepository(database.ConnectMongoDB())
+	chatService := sChat.NewChatService(chatRepository)
+	ChatHandler := hChat.NewChatHandler(chatService)
+
 	routes.RouteInvoice(e, InvoiceHandler)
 	routes.RouteAuth(e, AuthHandler)
 	routes.RoutePelanggan(e, pelangganHandler)
+	routes.RouteChat(e, ChatHandler)
+	routes.RoutePengaduan(e, pengaduanHandler)
 
 	e.Logger.Fatal(e.Start(":8000"))
 

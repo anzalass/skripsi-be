@@ -1,6 +1,10 @@
 package entities
 
-import "time"
+import (
+	"time"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
 
 type AkunModel struct {
 	ID        uint64            `gorm:"column:id;type:BIGINT UNSIGNED;primaryKey" json:"id"`
@@ -9,7 +13,8 @@ type AkunModel struct {
 	Role      string            `gorm:"column:role;type:VARCHAR(20)" json:"role"`
 	Password  string            `gorm:"column:password;type:VARCHAR(255)" json:"password"`
 	Transaksi []TransaksiModels `gorm:"foreignKey:IDAkun" json:"transaksi"`
-	Invoice   []InvoiceModels   `gorm:"foreignKey:IDAkun" json:"invoiice"`
+	Invoice   []InvoiceModels   `gorm:"foreignKey:IDAkun" json:"invoice"`
+	Pengaduan []PengaduanModel  `gorm:"foreignKey:IDAkun" json:"pengaduan"`
 }
 
 func (AkunModel) TableName() string {
@@ -30,6 +35,7 @@ type UserModels struct {
 	Transaksi      []TransaksiModels `gorm:"foreignKey:IDPelanggan" json:"transaksi"`
 	Invoice        []InvoiceModels   `gorm:"foreignKey:IDPelanggan" json:"invoice"`
 	SnapUrl        []SnapUrl         `gorm:"foreignKey:IDPelanggan" json:"snap_url"`
+	Pengaduan      []PengaduanModel  `gorm:"foreignKey:IDPelanggan" json:"pengaduan"`
 }
 type TagihanModels struct {
 	ID               uint64     `gorm:"column:id;type:BIGINT UNSIGNED;primaryKey" json:"id"`
@@ -96,6 +102,39 @@ type SnapUrl struct {
 	DeletedAt   *time.Time `gorm:"column:deleted_at;type:TIMESTAMP NULL;index" json:"deleted_at"`
 }
 
+type Chat struct {
+	ID        primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
+	IdUser    uint64             `json:"id_user" form:"id_user"`
+	Role      string
+	Text      string `json:"text" form:"text"`
+	CreatedAt time.Time
+}
+type ChatRequest struct {
+	ID        primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
+	IdUser    uint64             `json:"id_user" form:"id_user"`
+	Role      string
+	Name      string `json:"name" form:"name"`
+	Text      string `json:"text" form:"text"`
+	CreatedAt time.Time
+}
+
+type PengaduanModel struct {
+	ID             uint64     `gorm:"column:id;type:BIGINT UNSIGNED;primaryKey" json:"id"`
+	IDPelanggan    uint64     `gorm:"column:id_pelanggan;type:BIGINT UNSIGNED;" json:"id_pelanggan"`
+	Email          string     `gorm:"column:email;type:VARCHAR(255)" json:"email"`
+	IDAkun         uint64     `gorm:"column:id_akun;type:BIGINT UNSIGNED;" json:"id_akun"`
+	Nama           string     `gorm:"column:nama;type:VARCHAR(255);" json:"nama"`
+	Deskripsi      string     `gorm:"column:deskripsi;type:TEXT;" json:"deskripsi"`
+	Alamat         string     `gorm:"column:alamat;type:TEXT;" json:"alamat"`
+	Foto           string     `gorm:"column:foto;type:TEXT" json:"foto"`
+	NoWhatsapp     string     `gorm:"column:no_whatsapp;type:VARCHAR(15);" json:"no_whatsapp"`
+	Status         string     `gorm:"column:status;type:VARCHAR(50);" json:"status"`
+	WaktuKunjungan string     `gorm:"column:waktu_kunjungan;type:VARCHAR(255); default:'Sekarang'" json:"waktu_kunjungan"`
+	CreatedAt      time.Time  `gorm:"column:created_at;type:timestamp DEFAULT CURRENT_TIMESTAMP" json:"created_at"`
+	UpdatedAt      time.Time  `gorm:"column:updated_at;type:timestamp DEFAULT CURRENT_TIMESTAMP" json:"updated_at"`
+	DeletedAt      *time.Time `gorm:"column:deleted_at;type:TIMESTAMP NULL;index" json:"deleted_at"`
+}
+
 func (UserModels) TableName() string {
 	return "users"
 }
@@ -110,4 +149,7 @@ func (InvoiceModels) TableName() string {
 }
 func (SnapUrl) TableName() string {
 	return "snapurls"
+}
+func (PengaduanModel) TableName() string {
+	return "pengaduans"
 }

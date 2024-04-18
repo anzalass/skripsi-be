@@ -103,3 +103,21 @@ func (r *InvoiceRepository) GetTransaksiByIdPembayaran(idpembayaran string) (*en
 
 	return data, nil
 }
+
+func (r *InvoiceRepository) GetAllPembayaran() ([]*entities.TransaksiModels, error) {
+	var data []*entities.TransaksiModels
+	if err := r.db.Where("deleted_at IS NULL").Find(&data).Error; err != nil {
+		return nil, err
+	}
+
+	return data, nil
+}
+
+// func (r *InvoiceRepository) GetTransaksiBulanan() ([]*map[any]interface{}, error) {
+// 	var data []*entities.TransaksiModels
+// 	if err := r.db.Where("tanggal_bayar BETWEEN ? AND ?", "2024-03-01", "2024-03-31").Select("tanggal_bayar", "total_amount").Find(&data).Error; err != nil {
+// 		return nil, err
+// 	}
+
+// 	return data, nil
+// }

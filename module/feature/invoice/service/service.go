@@ -89,9 +89,14 @@ func (s *InvoiceService) CreateTransaksi(newData *entities.TransaksiModels) (any
 
 	}
 
+	res4, err4 := s.repouser.GetIdAkunByEmail(newData.Email)
+	if err4 != nil {
+		return "", errors.New("gagal membuat snap url")
+	}
+
 	value := &entities.TransaksiModels{
 		IDPelanggan:      newData.IDPelanggan,
-		IDAkun:           newData.IDAkun,
+		IDAkun:           res4,
 		IDPembayaran:     res2,
 		Email:            newData.Email,
 		Name:             newData.Name,
@@ -153,3 +158,31 @@ func (s *InvoiceService) GetTransaksiByIdPembayaran(idpembayaran string) (*entit
 
 	return res, nil
 }
+func (s *InvoiceService) GetAllPembayaran() ([]*entities.TransaksiModels, error) {
+	res, err := s.repo.GetAllPembayaran()
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+// func (s *InvoiceService) GetTransaksiBulanan() ([]map[string]interface{}, error) {
+// 	res, err := s.repo.GetTransaksiBulanan()
+// 	if err != nil {
+// 		return nil, err
+// 	}
+
+// 	groupedData := make(map[string]int)
+// 	for _, data := range res {
+// 		tanggal_bayar := data["tanggal_bayar"].(string)
+// 		total_amount := data["total_amount"].(uint64)
+
+// 		if _, ok := groupedData[tanggal_bayar]; !ok {
+// 			groupedData[tanggal_bayar] += total_amount
+
+// 		} else {
+// 			groupedData[tanggal_bayar] = total_amount
+// 		}
+// 	}
+// 	return res, nil
+// }
