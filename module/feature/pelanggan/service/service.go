@@ -75,3 +75,12 @@ func (s *PelangganService) GetPelangganByID(id int) (*entities.UserModels, error
 
 	return res, nil
 }
+
+func (s *PelangganService) GetAllDetailPelanggan(id uint64) (*entities.UserModels, error) {
+	res, err := s.repo.GetAllDetailPelanggan(id)
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
+}

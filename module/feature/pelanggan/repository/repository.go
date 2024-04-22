@@ -86,3 +86,26 @@ func (r *PelangganRepository) GetAllPelangganForCreateInvoice() ([]*entities.Use
 
 	return data, nil
 }
+
+func (r *PelangganRepository) GetAllDetailPelanggan(id uint64) (*entities.UserModels, error) {
+	data := entities.UserModels{}
+	if err := r.db.Preload("Tagihan").Preload("Transaksi").Where("id = ?", id).Find(&data).Error; err != nil {
+		return nil, err
+	}
+
+	return &data, nil
+}
+
+func (r *PelangganRepository) GetIdAkunByEmail(email string) (uint64, error) {
+	data := entities.AkunModel{}
+	if err := r.db.Where("email = ?", email).First(&data).Error; err != nil {
+		return 0, err
+	}
+
+	var id uint64
+	if err := r.db.Model(&data).Select("id").Scan(&id).Error; err != nil {
+		return 0, err
+	}
+
+	return id, nil
+}

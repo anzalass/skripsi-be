@@ -156,3 +156,25 @@ func (h *PelangganHandler) GetAllPelanggan() echo.HandlerFunc {
 
 	}
 }
+func (h *PelangganHandler) GetAllDetailPelanggan() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		idparse, err := strconv.ParseUint(c.Param("id"), 10, 64)
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, map[string]any{
+				"message": "id tidak ditemukan",
+			})
+		}
+		res, err := h.service.GetAllDetailPelanggan(idparse)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, map[string]any{
+				"message": "gagal mendapatkan data pelanggan",
+				"error":   err,
+			})
+		}
+		return c.JSON(http.StatusOK, map[string]any{
+			"message": "berhasil mendapatkan data pelanggan",
+			"data":    res,
+		})
+
+	}
+}

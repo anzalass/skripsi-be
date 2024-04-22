@@ -2,6 +2,7 @@ package database
 
 import (
 	"fmt"
+	"testskripsi/config"
 
 	"github.com/sirupsen/logrus"
 	"gorm.io/driver/mysql"
@@ -9,7 +10,7 @@ import (
 )
 
 func InitDatabase() *gorm.DB {
-	var dsn = fmt.Sprintf("root:@tcp(localhost:3306)/grasinet?charset=utf8mb4&parseTime=True&loc=Local")
+	var dsn = fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local", config.InitConfig().DBUser, config.InitConfig().DBPass, config.InitConfig().DBHost, config.InitConfig().DBPort, config.InitConfig().DBName)
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		logrus.Fatal(err)

@@ -17,6 +17,8 @@ type RepositoryInvoice interface {
 	UpdateStatusTransaksi(id string) (bool, error)
 	GetTransaksiByEmail(email string, page uint64) ([]*entities.TransaksiModels, error)
 	GetTransaksiByIdPembayaran(idpembayaran string) (*entities.TransaksiModels, error)
+	GetAllPembayaran() ([]*entities.TransaksiModels, error)
+	// GetTransaksiBulanan() ([]map[string]interface{}, error)
 }
 
 type ServiceInvoice interface {
@@ -27,6 +29,8 @@ type ServiceInvoice interface {
 	ConfirmedPayment(idpembayaran string) (bool, error)
 	GetTransaksiByEmail(email string, page uint64) ([]*entities.TransaksiModels, error)
 	GetTransaksiByIdPembayaran(idpembayaran string) (*entities.TransaksiModels, error)
+	GetAllPembayaran() ([]*entities.TransaksiModels, error)
+	// GetTransaksiBulanan() ([]map[string]interface{}, error)
 }
 
 type HandlerInvoice interface {
@@ -37,4 +41,6 @@ type HandlerInvoice interface {
 	AfterPayment() echo.HandlerFunc
 	GetTransaksiByEmail() echo.HandlerFunc
 	GetTransaksiByIdPembayaran() echo.HandlerFunc
+	GetAllPembayaran() echo.HandlerFunc
+	// GetTransaksiBulanan() echo.HandlerFunc
 }

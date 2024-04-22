@@ -130,7 +130,6 @@ func (h *InvoiceHandler) AfterPayment() echo.HandlerFunc {
 		orderId, exists := notificationPayload["order_id"].(string)
 		if !exists {
 			return c.JSON(http.StatusBadRequest, map[string]any{
-
 				"message": "gagal mendapatkan order id",
 			})
 		}
@@ -191,3 +190,39 @@ func (h *InvoiceHandler) GetTransaksiByIdPembayaran() echo.HandlerFunc {
 		})
 	}
 }
+
+func (h *InvoiceHandler) GetAllPembayaran() echo.HandlerFunc {
+	return func(c echo.Context) error {
+
+		res, err := h.service.GetAllPembayaran()
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, map[string]any{
+				"success": false,
+				"message": err,
+			})
+		}
+		return c.JSON(http.StatusOK, map[string]any{
+			"success": true,
+			"message": "berhasil mendapatkan semua pembayaran",
+			"data":    res,
+		})
+	}
+}
+
+// func (h *InvoiceHandler) GetTransaksiBulanan() echo.HandlerFunc {
+// 	return func(c echo.Context) error {
+
+// 		res, err := h.service.GetTransaksiBulanan()
+// 		if err != nil {
+// 			return c.JSON(http.StatusInternalServerError, map[string]any{
+// 				"success": false,
+// 				"message": err,
+// 			})
+// 		}
+// 		return c.JSON(http.StatusOK, map[string]any{
+// 			"success": true,
+// 			"message": "berhasil mendapatkan semua pembayaran",
+// 			"data":    res,
+// 		})
+// 	}
+// }

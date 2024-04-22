@@ -13,6 +13,8 @@ type RepositoryPelanggan interface {
 	GetAllPelanggan() ([]*entities.UserModels, error)
 	GetAllPelangganForCreateInvoice() ([]*entities.UserModels, error)
 	GetPelangganByID(id int) (*entities.UserModels, error)
+	GetAllDetailPelanggan(id uint64) (*entities.UserModels, error)
+	GetIdAkunByEmail(email string) (uint64, error)
 }
 type ServicePelanggan interface {
 	CreatePelanggan(newData *entities.UserModels) (*entities.UserModels, error)
@@ -20,6 +22,7 @@ type ServicePelanggan interface {
 	DeletePelanggan(id int) (bool, error)
 	GetAllPelanggan() ([]*entities.UserModels, error)
 	GetPelangganByID(id int) (*entities.UserModels, error)
+	GetAllDetailPelanggan(id uint64) (*entities.UserModels, error)
 }
 type HandlerPelanggan interface {
 	CreatePelanggan() echo.HandlerFunc
@@ -27,4 +30,5 @@ type HandlerPelanggan interface {
 	DeletePelanggan() echo.HandlerFunc
 	GetAllPelanggan() echo.HandlerFunc
 	GetPelangganByID() echo.HandlerFunc
+	GetAllDetailPelanggan() echo.HandlerFunc
 }
