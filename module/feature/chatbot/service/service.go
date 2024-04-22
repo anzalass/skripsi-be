@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"fmt"
+	"testskripsi/config"
 	"testskripsi/module/entities"
 	"testskripsi/module/feature/chatbot"
 	"time"
@@ -52,8 +53,8 @@ func (s *ChatService) CreateQuestion(newData entities.Chat) (string, error) {
 }
 
 func (s *ChatService) CreateAnswer(newData entities.Chat) (string, error) {
-	var apiKey string = "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"
-	client := openai.NewClient(apiKey)
+
+	client := openai.NewClient(config.InitConfig().OpenaiKey)
 	ctx := context.Background()
 	message := []openai.ChatCompletionMessage{
 		{

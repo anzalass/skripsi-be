@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"testskripsi/config"
 	hAuth "testskripsi/module/feature/auth/handler"
 	rAuth "testskripsi/module/feature/auth/repository"
 	sAuth "testskripsi/module/feature/auth/service"
@@ -30,7 +31,7 @@ import (
 
 func main() {
 	fmt.Println("hello")
-
+	config.InitConfig()
 	e := echo.New()
 	e.GET("/", func(c echo.Context) error {
 		return c.String(http.StatusOK, "hello gays")

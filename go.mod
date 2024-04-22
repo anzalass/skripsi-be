@@ -11,6 +11,7 @@ require (
 	github.com/imagekit-developer/imagekit-go v0.0.0-20231221064253-557eb49f9c53 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
+	github.com/joho/godotenv v1.5.1 // indirect
 	github.com/klauspost/compress v1.13.6 // indirect
 	github.com/labstack/echo/v4 v4.11.4 // indirect
 	github.com/labstack/gommon v0.4.2 // indirect

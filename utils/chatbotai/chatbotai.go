@@ -3,6 +3,7 @@ package chatbotai
 import (
 	"context"
 	"fmt"
+	"testskripsi/config"
 	"testskripsi/module/entities"
 	"time"
 
@@ -55,8 +56,7 @@ func CreateQuestion(iduser uint64, name string, text string) (string, error) {
 
 func CreateAnswer(iduser uint64, name string, text string) (string, error) {
 
-	var apiKey string = "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"
-	client := openai.NewClient(apiKey)
+	client := openai.NewClient(config.InitConfig().OpenaiKey)
 	ctx := context.Background()
 	message := []openai.ChatCompletionMessage{
 		{
