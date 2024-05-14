@@ -7,7 +7,7 @@ type CreateInvoiceRequest struct {
 }
 
 type TransaksiRequest struct {
-	IDPelanggan      uint64 `json:"id_pelanggan"`
+	IDPelanggan      string `json:"id_pelanggan"`
 	IDAkun           uint64 `json:"id_akun"`
 	Email            string `json:"email"`
 	Name             string `json:"name"`

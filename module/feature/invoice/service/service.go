@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"strconv"
+	_ "fmt"
 	"strings"
 
 	"testskripsi/module/entities"
@@ -47,11 +47,11 @@ func (s *InvoiceService) CreateAllInvoice(bulan string, tahun uint64) (bool, err
 			Bulan:            bulan,
 			Alamat:           data.Alamat,
 			Tahun:            tahun,
-			PeriodePemakaian: fmt.Sprintf("ID%s%s%d", strconv.FormatUint(data.ID, 10), bulan, tahun),
+			PeriodePemakaian: fmt.Sprintf("ID%s%s%d", data.ID, bulan, tahun),
 		}
 
-		strid := strconv.FormatUint(data.ID, 16)
-		fmt.Println("woi", strid)
+		// strid := strconv.FormatUint(data.ID, 16)
+		// // fmt.Println("woi", strid)
 
 		_, err := s.repo.CreateInvoice(newInvoice)
 		if err != nil {
@@ -71,12 +71,15 @@ func (s *InvoiceService) GetAllData() ([]*entities.TagihanModels, error) {
 	return res, nil
 }
 
-func (s *InvoiceService) GetTagihanByIdPelanggan(id uint64) (any, error) {
+func (s *InvoiceService) GetTagihanByIdPelanggan(id string) (any, error) {
+
 	res, err := s.repo.GetTagihanByIdPelanggan(id)
 	if err != nil {
 		return nil, err
 	}
+
 	return res, nil
+
 }
 
 func (s *InvoiceService) CreateTransaksi(newData *entities.TransaksiModels) (any, error) {
@@ -106,6 +109,7 @@ func (s *InvoiceService) CreateTransaksi(newData *entities.TransaksiModels) (any
 		PeriodePemakaian: newData.PeriodePemakaian,
 		TanggalBayar:     time.Now(),
 		PaketLangganan:   newData.PaketLangganan,
+		Expired:          uint64(time.Now().Add(1 * 23 * time.Hour).Unix()),
 		HargaLangganan:   newData.HargaLangganan,
 		TotalAmount:      newData.TotalAmount,
 		MetodePembayaran: "midtrans",
@@ -125,17 +129,21 @@ func (s *InvoiceService) ConfirmedPayment(idpembayaran string) (bool, error) {
 		return false, err
 	}
 
+	_, err3 := s.repo.UpdateStatusTransaksi(idpembayaran)
+	if err3 != nil {
+		return false, err3
+	}
+
 	parts := strings.Fields(res)
 	for _, part := range parts {
 		_, err2 := s.repo.UpdateStatusTagihan(part)
 		if err2 != nil {
 			return false, err2
 		}
-	}
-
-	_, err3 := s.repo.UpdateStatusTransaksi(idpembayaran)
-	if err3 != nil {
-		return false, err3
+		_, err := s.repo.DeleteTransaksiPending(res)
+		if err != nil {
+			return false, err
+		}
 	}
 
 	return true, nil

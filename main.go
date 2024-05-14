@@ -10,6 +10,9 @@ import (
 	hChat "testskripsi/module/feature/chatbot/handler"
 	rChat "testskripsi/module/feature/chatbot/repository"
 	sChat "testskripsi/module/feature/chatbot/service"
+	hFaq "testskripsi/module/feature/faq/handler"
+	rFaq "testskripsi/module/feature/faq/repository"
+	sFaq "testskripsi/module/feature/faq/service"
 	hInvoice "testskripsi/module/feature/invoice/handler"
 	rInvoice "testskripsi/module/feature/invoice/repository"
 	sInvoice "testskripsi/module/feature/invoice/service"
@@ -65,14 +68,19 @@ func main() {
 	pengaduanHandler := hPengaduan.NewPengaduanHandler(pengaduanService)
 
 	chatRepository := rChat.NewChatbotRepository(database.ConnectMongoDB())
-	chatService := sChat.NewChatService(chatRepository)
+	chatService := sChat.NewChatService(chatRepository, pelangganRepo)
 	ChatHandler := hChat.NewChatHandler(chatService)
+
+	faqRepository := rFaq.NewFaqRepository(db)
+	faqService := sFaq.NewFaqService(faqRepository)
+	faqHandler := hFaq.NewFaqHandler(faqService)
 
 	routes.RouteInvoice(e, InvoiceHandler)
 	routes.RouteAuth(e, AuthHandler)
 	routes.RoutePelanggan(e, pelangganHandler)
 	routes.RouteChat(e, ChatHandler)
 	routes.RoutePengaduan(e, pengaduanHandler)
+	routes.RouteFaq(e, faqHandler)
 
 	e.Logger.Fatal(e.Start(":8000"))
 

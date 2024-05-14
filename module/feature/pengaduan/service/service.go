@@ -20,7 +20,7 @@ func NewPengaduanService(repo pengaduan.RepositoryPengaduanInterface, repouser p
 	}
 }
 
-func (s *ServicePengaduan) GetPelangganByID(id uint64) ([]*entities.UserModels, error) {
+func (s *ServicePengaduan) GetPelangganByID(id string) ([]*entities.UserModels, error) {
 	res, err := s.repo.GetPelangganByID(id)
 	if err != nil {
 		return nil, errors.New(err.Error())

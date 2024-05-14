@@ -5,7 +5,7 @@ type EditStatusPengaduan struct {
 }
 
 type CreateSPengaduan struct {
-	IDPelanggan    uint64 `json:"id_pelanggan" form:"id_pelanggan"`
+	IDPelanggan    string `json:"id_pelanggan" form:"id_pelanggan"`
 	Nama           string `json:"nama" form:"nama"`
 	Email          string `json:"email" form:"email"`
 	Deskripsi      string `json:"deskripsi" form:"deskripsi"`

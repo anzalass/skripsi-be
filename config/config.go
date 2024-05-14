@@ -70,7 +70,7 @@ func loadConfig() *ProgramConfig {
 		res.Secret = val
 	}
 	if val, found := os.LookupEnv("OPENAIKEY"); found {
-		res.DBName = val
+		res.OpenaiKey = val
 	}
 	if val, found := os.LookupEnv("MONGODBURI"); found {
 		res.Secret = val

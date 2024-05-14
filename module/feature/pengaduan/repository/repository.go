@@ -17,7 +17,7 @@ func NewPengaduanRepository(db *gorm.DB) pengaduan.RepositoryPengaduanInterface 
 	}
 }
 
-func (r *PengaduanRepository) GetPelangganByID(id uint64) ([]*entities.UserModels, error) {
+func (r *PengaduanRepository) GetPelangganByID(id string) ([]*entities.UserModels, error) {
 	var pelanggan []*entities.UserModels
 
 	if err := r.db.Where("id = ?", id).Find(&pelanggan).Error; err != nil {

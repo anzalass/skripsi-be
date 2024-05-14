@@ -23,7 +23,7 @@ func NewPengaduanHandler(service pengaduan.ServicePengaduanInterface) pengaduan.
 
 func (h *PengaduanHandler) GetPelangganByID() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		idparse, _ := strconv.ParseUint(c.Param("id"), 10, 64)
+		idparse := c.Param("id")
 		res, err := h.service.GetPelangganByID(idparse)
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, map[string]any{

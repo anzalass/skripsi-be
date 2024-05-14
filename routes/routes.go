@@ -3,6 +3,7 @@ package routes
 import (
 	"testskripsi/module/feature/auth"
 	"testskripsi/module/feature/chatbot"
+	"testskripsi/module/feature/faq"
 	"testskripsi/module/feature/invoice"
 	"testskripsi/module/feature/pelanggan"
 	"testskripsi/module/feature/pengaduan"
@@ -30,6 +31,7 @@ func RouteAuth(e *echo.Echo, h auth.HandlerAuthInterface) {
 func RouteChat(e *echo.Echo, h chatbot.ChatHandlerInterface) {
 	e.POST("/answer", h.CreateAnswer())
 	e.POST("/question", h.CreateQuestion())
+	e.GET("/chat/:email", h.GetChatByEmail())
 
 }
 func RoutePelanggan(e *echo.Echo, h pelanggan.HandlerPelanggan) {
@@ -39,6 +41,8 @@ func RoutePelanggan(e *echo.Echo, h pelanggan.HandlerPelanggan) {
 	e.GET("/pelanggan/:id", h.GetPelangganByID())
 	e.GET("/detail-pelanggan/:id", h.GetAllDetailPelanggan())
 	e.DELETE("/delete-pelanggan/:id", h.DeletePelanggan())
+	e.GET("/cekiduser/:email", h.CheckIdUserByEmail())
+	e.POST("/insertidakun", h.InsertIdUserByEmail())
 }
 
 func RoutePengaduan(e *echo.Echo, h pengaduan.HandlerPengaduanInterface) {
@@ -49,4 +53,13 @@ func RoutePengaduan(e *echo.Echo, h pengaduan.HandlerPengaduanInterface) {
 	e.PUT("/editstatuspengaduan/:id", h.EditStatusPengaduan())
 	e.POST("/create-pengaduan", h.CreatePengaduan())
 	e.GET("/statuspengaduan/:id", h.GetStatusPengaduan())
+}
+
+func RouteFaq(e *echo.Echo, h faq.FaqHandlerInterface) {
+	e.POST("/create-faq", h.CreateFaq())
+	e.PUT("/update-faq/:id", h.UpdateFaqById())
+	e.GET("/faq", h.GetAllFaq())
+	e.GET("/faq/:id", h.GetFaqById())
+	e.DELETE("/faq/:id", h.DeleteFaqById())
+	e.PUT("/increment-faq/:id", h.IncrementViewsFaq())
 }
