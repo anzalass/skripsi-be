@@ -44,7 +44,22 @@ func (h *ChatHandler) CreateQuestion() echo.HandlerFunc {
 			return c.JSON(http.StatusBadRequest, err)
 		}
 
-		res, err := h.service.CreateAnswer(*chat)
+		res, err := h.service.CreateQuestion(*chat)
+		if err != nil {
+			return c.JSON(http.StatusBadRequest, err)
+		}
+
+		return c.JSON(http.StatusOK, map[string]any{
+			"success": true,
+			"data":    res,
+		})
+	}
+}
+func (h *ChatHandler) GetChatByEmail() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		email := c.Param("email")
+
+		res, err := h.service.GetChatByEmail(email)
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, err)
 		}

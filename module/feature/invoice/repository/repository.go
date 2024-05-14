@@ -33,7 +33,7 @@ func (r *InvoiceRepository) CreateInvoice(newData *entities.TagihanModels) (*ent
 	return newData, nil
 }
 
-func (r *InvoiceRepository) GetTagihanByIdPelanggan(id uint64) ([]*entities.TagihanModels, error) {
+func (r *InvoiceRepository) GetTagihanByIdPelanggan(id string) ([]*entities.TagihanModels, error) {
 	var data []*entities.TagihanModels
 
 	if err := r.db.Where("id_pelanggan = ? AND deleted_at IS NULL AND status = ?", id, "belum lunas").Find(&data).Error; err != nil {
@@ -44,6 +44,12 @@ func (r *InvoiceRepository) GetTagihanByIdPelanggan(id uint64) ([]*entities.Tagi
 }
 
 func (r *InvoiceRepository) CreateTransaksi(newData *entities.TransaksiModels) (*entities.TransaksiModels, error) {
+	if err := r.db.Create(&newData).Error; err != nil {
+		return newData, err
+	}
+	return newData, nil
+}
+func (r *InvoiceRepository) CreateSnapUrl(newData *entities.SnapUrl) (*entities.SnapUrl, error) {
 	if err := r.db.Create(&newData).Error; err != nil {
 		return newData, err
 	}
@@ -82,6 +88,13 @@ func (r *InvoiceRepository) UpdateStatusTransaksi(id string) (bool, error) {
 	}
 	return true, nil
 }
+func (r *InvoiceRepository) DeleteTransaksiPending(periodepemakaian string) (bool, error) {
+	var data entities.TransaksiModels
+	if err := r.db.Where("periode_pemakaian = ? AND status = ?", periodepemakaian, "pending").Delete(&data).Error; err != nil {
+		return false, err
+	}
+	return true, nil
+}
 
 func (r *InvoiceRepository) GetTransaksiByEmail(email string, page uint64) ([]*entities.TransaksiModels, error) {
 	var data []*entities.TransaksiModels
@@ -107,6 +120,14 @@ func (r *InvoiceRepository) GetTransaksiByIdPembayaran(idpembayaran string) (*en
 func (r *InvoiceRepository) GetAllPembayaran() ([]*entities.TransaksiModels, error) {
 	var data []*entities.TransaksiModels
 	if err := r.db.Where("deleted_at IS NULL").Find(&data).Error; err != nil {
+		return nil, err
+	}
+
+	return data, nil
+}
+func (r *InvoiceRepository) GetTransaksiByIdPelangganBeforeExpired(id uint64, timenow uint64) ([]*entities.TransaksiModels, error) {
+	var data []*entities.TransaksiModels
+	if err := r.db.Where("deleted_at IS NULL AND expired > ?  AND id = ?", timenow, id).Find(&data).Error; err != nil {
 		return nil, err
 	}
 

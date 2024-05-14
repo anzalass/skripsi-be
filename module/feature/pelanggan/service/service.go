@@ -8,7 +8,7 @@ import (
 )
 
 type PelangganService struct {
-	repo pelanggan.ServicePelanggan
+	repo pelanggan.RepositoryPelanggan
 }
 
 func NewPelangganService(repo pelanggan.RepositoryPelanggan) pelanggan.ServicePelanggan {
@@ -19,6 +19,7 @@ func NewPelangganService(repo pelanggan.RepositoryPelanggan) pelanggan.ServicePe
 
 func (s *PelangganService) CreatePelanggan(newData *entities.UserModels) (*entities.UserModels, error) {
 	value := &entities.UserModels{
+		ID:             newData.ID,
 		Name:           newData.Name,
 		Alamat:         newData.Alamat,
 		Status:         "aktif",
@@ -32,7 +33,7 @@ func (s *PelangganService) CreatePelanggan(newData *entities.UserModels) (*entit
 	}
 	return res, nil
 }
-func (s *PelangganService) UpdatePelanggan(id int, newData *entities.UserModels) (bool, error) {
+func (s *PelangganService) UpdatePelanggan(id string, newData *entities.UserModels) (bool, error) {
 
 	value := &entities.UserModels{
 		Name:           newData.Name,
@@ -50,7 +51,7 @@ func (s *PelangganService) UpdatePelanggan(id int, newData *entities.UserModels)
 
 	return res, nil
 }
-func (s *PelangganService) DeletePelanggan(id int) (bool, error) {
+func (s *PelangganService) DeletePelanggan(id string) (bool, error) {
 	res, err := s.repo.DeletePelanggan(id)
 	if err != nil {
 		return false, errors.New("service gagal hapus pelanggan")
@@ -67,7 +68,7 @@ func (s *PelangganService) GetAllPelanggan() ([]*entities.UserModels, error) {
 
 	return res, nil
 }
-func (s *PelangganService) GetPelangganByID(id int) (*entities.UserModels, error) {
+func (s *PelangganService) GetPelangganByID(id string) (*entities.UserModels, error) {
 	res, err := s.repo.GetPelangganByID(id)
 	if err != nil {
 		return nil, errors.New("service gagal dapatkan semua pelanggan")
@@ -76,8 +77,31 @@ func (s *PelangganService) GetPelangganByID(id int) (*entities.UserModels, error
 	return res, nil
 }
 
-func (s *PelangganService) GetAllDetailPelanggan(id uint64) (*entities.UserModels, error) {
+func (s *PelangganService) GetAllDetailPelanggan(id string) (*entities.UserModels, error) {
 	res, err := s.repo.GetAllDetailPelanggan(id)
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
+}
+
+func (s *PelangganService) CheckIdUserByEmail(email string) (string, error) {
+	res, err := s.repo.CheckIdUserByEmail(email)
+	if err != nil {
+		return "error", nil
+	}
+
+	return res, nil
+}
+
+func (s *PelangganService) InsertIdUserByEmail(email string, iduser string) (*entities.AkunModel, error) {
+	err := s.repo.SetNullIdUser(iduser)
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := s.repo.InsertIdUserByEmail(email, iduser)
 	if err != nil {
 		return nil, err
 	}

@@ -2,7 +2,6 @@ package handler
 
 import (
 	"net/http"
-	"strconv"
 	"testskripsi/module/entities"
 	"testskripsi/module/feature/pelanggan"
 	"testskripsi/module/feature/pelanggan/dto"
@@ -30,6 +29,7 @@ func (h *PelangganHandler) CreatePelanggan() echo.HandlerFunc {
 		}
 
 		value := &entities.UserModels{
+			ID:             pelangganRequest.ID,
 			Name:           pelangganRequest.Name,
 			Alamat:         pelangganRequest.Alamat,
 			PaketLangganan: pelangganRequest.PaketLangganan,
@@ -55,14 +55,9 @@ func (h *PelangganHandler) CreatePelanggan() echo.HandlerFunc {
 
 func (h *PelangganHandler) GetPelangganByID() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		idparse, err := strconv.ParseUint(c.Param("id"), 10, 64)
-		if err != nil {
-			return c.JSON(http.StatusBadRequest, map[string]any{
-				"message": "id tidak ditemukan",
-			})
-		}
+		idparse := c.Param("id")
 
-		res, err := h.service.GetPelangganByID(int(idparse))
+		res, err := h.service.GetPelangganByID(idparse)
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, map[string]any{
 				"message": "data tidak ditemukan",
@@ -87,12 +82,7 @@ func (h *PelangganHandler) UpdatePelanggan() echo.HandlerFunc {
 			})
 		}
 
-		idparse, err := strconv.ParseUint(c.Param("id"), 10, 64)
-		if err != nil {
-			return c.JSON(http.StatusBadRequest, map[string]any{
-				"message": "id tidak ditemukan",
-			})
-		}
+		idparse := c.Param("id")
 
 		value := &entities.UserModels{
 			Name:           pelangganRequest.Name,
@@ -102,7 +92,7 @@ func (h *PelangganHandler) UpdatePelanggan() echo.HandlerFunc {
 			HargaLangganan: pelangganRequest.HargaLangganan,
 		}
 
-		res, err := h.service.UpdatePelanggan(int(idparse), value)
+		res, err := h.service.UpdatePelanggan(idparse, value)
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, map[string]any{
 				"error":   err,
@@ -120,14 +110,7 @@ func (h *PelangganHandler) UpdatePelanggan() echo.HandlerFunc {
 func (h *PelangganHandler) DeletePelanggan() echo.HandlerFunc {
 	return func(c echo.Context) error {
 
-		idparse, err := strconv.ParseUint(c.Param("id"), 10, 64)
-		if err != nil {
-			return c.JSON(http.StatusBadRequest, map[string]any{
-				"message": "id tidak ditemukan",
-			})
-		}
-
-		res, err := h.service.DeletePelanggan(int(idparse))
+		res, err := h.service.DeletePelanggan(c.Param("id"))
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, map[string]any{
 				"message": "gagal menghapus pelanggan ",
@@ -158,12 +141,8 @@ func (h *PelangganHandler) GetAllPelanggan() echo.HandlerFunc {
 }
 func (h *PelangganHandler) GetAllDetailPelanggan() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		idparse, err := strconv.ParseUint(c.Param("id"), 10, 64)
-		if err != nil {
-			return c.JSON(http.StatusBadRequest, map[string]any{
-				"message": "id tidak ditemukan",
-			})
-		}
+		idparse := c.Param("id")
+
 		res, err := h.service.GetAllDetailPelanggan(idparse)
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, map[string]any{
@@ -176,5 +155,45 @@ func (h *PelangganHandler) GetAllDetailPelanggan() echo.HandlerFunc {
 			"data":    res,
 		})
 
+	}
+}
+
+func (h *PelangganHandler) CheckIdUserByEmail() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		email := c.Param("email")
+		res, err := h.service.CheckIdUserByEmail(email)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, map[string]any{
+				"message": "gagal mendapatkan id user",
+				"error":   err,
+			})
+		}
+		return c.JSON(http.StatusOK, map[string]any{
+			"message": "berhasil",
+			"data":    res,
+		})
+	}
+}
+
+func (h *PelangganHandler) InsertIdUserByEmail() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		pelangganRequest := new(dto.InsertIDAkun)
+		if err := c.Bind(pelangganRequest); err != nil {
+			return c.JSON(http.StatusBadRequest, map[string]any{
+				"error": err,
+			})
+		}
+
+		res, err := h.service.InsertIdUserByEmail(pelangganRequest.Email, pelangganRequest.IdUser)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, map[string]any{
+				"message": "gagal",
+				"error":   err,
+			})
+		}
+		return c.JSON(http.StatusOK, map[string]any{
+			"message": "berhasil",
+			"data":    res,
+		})
 	}
 }

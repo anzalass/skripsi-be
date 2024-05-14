@@ -25,7 +25,7 @@ func (r *PelangganRepository) CreatePelanggan(newData *entities.UserModels) (*en
 
 	return newData, nil
 }
-func (r *PelangganRepository) UpdatePelanggan(id int, newData *entities.UserModels) (bool, error) {
+func (r *PelangganRepository) UpdatePelanggan(id string, newData *entities.UserModels) (bool, error) {
 	pelanggan := entities.UserModels{}
 
 	if err := r.db.Model(&pelanggan).Where("id = ? AND deleted_at IS NULL", id).Updates(&newData).Error; err != nil {
@@ -35,7 +35,7 @@ func (r *PelangganRepository) UpdatePelanggan(id int, newData *entities.UserMode
 	return true, nil
 }
 
-func (r *PelangganRepository) DeletePelanggan(id int) (bool, error) {
+func (r *PelangganRepository) DeletePelanggan(id string) (bool, error) {
 	pelanggan := entities.UserModels{}
 
 	if err := r.db.Model(&pelanggan).Where("id = ? AND deleted_at IS NULL", id).Update("deleted_at", time.Now()).Error; err != nil {
@@ -45,7 +45,7 @@ func (r *PelangganRepository) DeletePelanggan(id int) (bool, error) {
 	return true, nil
 
 }
-func (r *PelangganRepository) GetPelangganByID(id int) (*entities.UserModels, error) {
+func (r *PelangganRepository) GetPelangganByID(id string) (*entities.UserModels, error) {
 	pelanggan := entities.UserModels{}
 
 	if err := r.db.Where("id = ?", id).First(&pelanggan).Error; err != nil {
@@ -87,7 +87,7 @@ func (r *PelangganRepository) GetAllPelangganForCreateInvoice() ([]*entities.Use
 	return data, nil
 }
 
-func (r *PelangganRepository) GetAllDetailPelanggan(id uint64) (*entities.UserModels, error) {
+func (r *PelangganRepository) GetAllDetailPelanggan(id string) (*entities.UserModels, error) {
 	data := entities.UserModels{}
 	if err := r.db.Preload("Tagihan").Preload("Transaksi").Where("id = ?", id).Find(&data).Error; err != nil {
 		return nil, err
@@ -108,4 +108,28 @@ func (r *PelangganRepository) GetIdAkunByEmail(email string) (uint64, error) {
 	}
 
 	return id, nil
+}
+
+func (r *PelangganRepository) CheckIdUserByEmail(email string) (string, error) {
+	data := &entities.AkunModel{}
+	if err := r.db.Where("email = ?", email).First(data).Error; err != nil {
+		return "error", err
+	}
+	return data.IDUser, nil
+}
+
+func (r *PelangganRepository) InsertIdUserByEmail(email string, iduser string) (*entities.AkunModel, error) {
+	data := &entities.AkunModel{}
+	if err := r.db.Model(data).Where("email = ?", email).Update("id_user", iduser).Error; err != nil {
+		return nil, err
+	}
+	return data, nil
+}
+
+func (r *PelangganRepository) SetNullIdUser(iduser string) error {
+	data := &entities.AkunModel{}
+	if err := r.db.Model(data).Where("id_user = ?", iduser).Update("id_user", nil).Error; err != nil {
+		return err
+	}
+	return nil
 }

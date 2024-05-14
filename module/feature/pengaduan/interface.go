@@ -7,7 +7,7 @@ import (
 )
 
 type RepositoryPengaduanInterface interface {
-	GetPelangganByID(id uint64) ([]*entities.UserModels, error)
+	GetPelangganByID(id string) ([]*entities.UserModels, error)
 	CreatePengaduan(newData *entities.PengaduanModel) (*entities.PengaduanModel, error)
 	GetAllPengaduan() ([]*entities.PengaduanModel, error)
 	EditStatusPengaduan(id uint64, status string) error
@@ -17,7 +17,7 @@ type RepositoryPengaduanInterface interface {
 }
 
 type ServicePengaduanInterface interface {
-	GetPelangganByID(id uint64) ([]*entities.UserModels, error)
+	GetPelangganByID(id string) ([]*entities.UserModels, error)
 	CreatePengaduan(newData *entities.PengaduanModel, filename string, file interface{}, waktu string) (*entities.PengaduanModel, error)
 	GetAllPengaduan() ([]*entities.PengaduanModel, error)
 	EditStatusPengaduan(id uint64, status string) error

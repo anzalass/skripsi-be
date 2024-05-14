@@ -68,7 +68,7 @@ func (h *InvoiceHandler) GetAllInvoice() echo.HandlerFunc {
 
 func (h *InvoiceHandler) GetInvoiceById() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		idparse, _ := strconv.ParseUint(c.Param("id"), 10, 64)
+		idparse := c.Param("id")
 		res, err := h.service.GetTagihanByIdPelanggan(idparse)
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, map[string]any{

@@ -6,20 +6,23 @@ import (
 	"testskripsi/config"
 	"testskripsi/module/entities"
 	"testskripsi/module/feature/chatbot"
+	"testskripsi/module/feature/pelanggan"
 	"time"
 
 	"github.com/sashabaranov/go-openai"
 )
 
 type ChatService struct {
-	repo  chatbot.ChatRepositoryInterface
-	debug bool
+	repo     chatbot.ChatRepositoryInterface
+	repouser pelanggan.RepositoryPelanggan
+	debug    bool
 }
 
-func NewChatService(repo chatbot.ChatRepositoryInterface) chatbot.ChatServiceInterface {
+func NewChatService(repo chatbot.ChatRepositoryInterface, repouser pelanggan.RepositoryPelanggan) chatbot.ChatServiceInterface {
 	return &ChatService{
-		repo:  repo,
-		debug: false,
+		repo:     repo,
+		repouser: repouser,
+		debug:    false,
 	}
 
 }
@@ -27,11 +30,22 @@ func NewChatService(repo chatbot.ChatRepositoryInterface) chatbot.ChatServiceInt
 func (s *ChatService) GetAnswerFromAi(client *openai.Client, messages []openai.ChatCompletionMessage, ctx context.Context) (openai.ChatCompletionResponse, error) {
 
 	model := openai.GPT3Dot5Turbo
+	// resp, err := client.CreateFineTuningJob(
+	// 	ctx,
+	// 	openai.ChatCompletionRequest{
+	// 		Model:    model,
+	// 		Messages: messages,
+
+	// 		// MaxTokens: 10,
+	// 	},
+	// )
 	resp, err := client.CreateChatCompletion(
 		ctx,
 		openai.ChatCompletionRequest{
 			Model:    model,
 			Messages: messages,
+
+			// MaxTokens: 10,
 		},
 	)
 
@@ -39,92 +53,68 @@ func (s *ChatService) GetAnswerFromAi(client *openai.Client, messages []openai.C
 
 }
 
-func (s *ChatService) CreateQuestion(newData entities.Chat) (string, error) {
+func (s *ChatService) CreateQuestion(newData entities.Chat) (*entities.Chat, error) {
+
+	idakun, err := s.repouser.GetIdAkunByEmail(newData.Email)
+	if err != nil {
+		return nil, err
+	}
+	iduser, _ := s.repouser.CheckIdUserByEmail(newData.Email)
+
+	lengthchatperday, _ := s.repo.GetChatPerDay(iduser)
+
+	if len(lengthchatperday) > 9 {
+		return nil, err
+	}
+
 	value := &entities.Chat{
-		IdUser:    newData.IdUser,
+		IdAkun:    idakun,
+		IdUser:    iduser,
 		Role:      "question",
 		Text:      newData.Text,
+		Email:     newData.Email,
+		Name:      newData.Name,
+		Views:     0,
 		CreatedAt: time.Now(),
 	}
-	if err := s.repo.CreateQuestion(*value); err != nil {
-		return "", err
+	res, err := s.repo.CreateQuestion(*value)
+	if err != nil {
+		return nil, err
 	}
-	return newData.Text, nil
+	return res, nil
 }
 
 func (s *ChatService) CreateAnswer(newData entities.Chat) (string, error) {
-
+	finetune := Fine()
 	client := openai.NewClient(config.InitConfig().OpenaiKey)
 	ctx := context.Background()
 	message := []openai.ChatCompletionMessage{
 		{
-			Role:    openai.ChatMessageRoleSystem,
+			Role:    openai.ChatMessageRoleUser,
 			Content: "Kamu adalah chatbot yang berperan sebagai customer service PT Media Grasi Internet,dilarang menjawab selain pertanyaan tentang Perusahaan dan tentang keluhan pelanggan",
-		},
-		{
-			Role:    openai.ChatMessageRoleUser,
-			Content: "dimana alamat PT Media Grasi Internet ?",
-		},
-		{
-			Role:    openai.ChatMessageRoleAssistant,
-			Content: "ada di perumahan puri rajeg",
-		},
-		{
-			Role:    openai.ChatMessageRoleUser,
-			Content: "Perusahaan ini bergerak dibidang apa?",
-		},
-		{
-			Role:    openai.ChatMessageRoleAssistant,
-			Content: "Bergerak dibidang pelayanan internet seperti internet rumah, internet sekolah dan internet instansi",
-		},
-		{
-			Role:    openai.ChatMessageRoleUser,
-			Content: "Paket apa saja yang tersedia untuk rumahan",
-		},
-		{
-			Role:    openai.ChatMessageRoleAssistant,
-			Content: "ada paket 3mbps dengan harga Rp.133.300, paket 5mbps dengan harga Rp.166.500, paket 10mbps dengan harga Rp.200.000 perbulan",
-		},
-		{
-			Role:    openai.ChatMessageRoleSystem,
-			Content: "Kamu adalah chatbot yang berperan sebagai customer service PT Media Grasi Internet, Apabila terjadi pengaduan tentang internet bermasalah",
-		},
-		{
-			Role:    openai.ChatMessageRoleUser,
-			Content: "Haii, internet saya bermasalah, apa yang harus saya lakukan?",
-		},
-		{
-			Role:    openai.ChatMessageRoleAssistant,
-			Content: "untuk langkah pertama silahkan restart modem dengan cara mencabut colokan dan colok kembali sebanyak tiga kali, apabila tidak bisa masukan nama, alamat dan no telp anda untuk kami teruskan ke admin, untuk ditangani",
-		},
-		{
-			Role:    openai.ChatMessageRoleUser,
-			Content: "Haii, saya sudah melakukan pembayaran kenapa masih dimatikan?",
-		},
-		{
-			Role:    openai.ChatMessageRoleAssistant,
-			Content: "untuk langkah pertama silahkan restart modem dengan cara mencabut colokan dan colok kembali sebanyak tiga kali, apabila tidak bisa masukan nama, alamat dan no telp anda untuk kami teruskan ke admin, untuk ditangani",
-		},
-		{
-			Role:    openai.ChatMessageRoleSystem,
-			Content: "Kamu adalah chatbot yang berperan sebagai customer service PT Media Grasi Internet, Apabila pelanggan ingin melakukan pembayaran",
-		},
-		{
-			Role:    openai.ChatMessageRoleUser,
-			Content: "Haii, saya ingin melakukan pembayaran bulanan bagaimana caranya",
-		},
-		{
-			Role:    openai.ChatMessageRoleAssistant,
-			Content: "silahkan kunjungi website www.layanangrasinet.com, kemudian login menggunakan google lalu pilih menu pembayaran, ketik id pelanggan, lalu jika tagihan sudah muncul silahkan klik bayar",
 		},
 	}
 
-	if newData.Text != "" {
+	for _, traine := range finetune {
+		message = append(message, openai.ChatCompletionMessage{
+			Role:    openai.ChatMessageRoleSystem,
+			Content: traine.System,
+		})
 		message = append(message, openai.ChatCompletionMessage{
 			Role:    openai.ChatMessageRoleUser,
-			Content: newData.Text,
+			Content: traine.User,
+		})
+		message = append(message, openai.ChatCompletionMessage{
+			Role:    openai.ChatMessageRoleAssistant,
+			Content: traine.Assistant,
 		})
 	}
+
+	message = append(message, openai.ChatCompletionMessage{
+		Role:    openai.ChatMessageRoleUser,
+		Content: newData.Text,
+	})
+
 	resp, err := s.GetAnswerFromAi(client, message, ctx)
 	if err != nil {
 		return "", err
@@ -144,6 +134,8 @@ func (s *ChatService) CreateAnswer(newData entities.Chat) (string, error) {
 	Assistant := &entities.Chat{
 		IdUser:    newData.IdUser,
 		Text:      answer.Content,
+		Email:     newData.Email,
+		Views:     0,
 		CreatedAt: time.Now(),
 		Role:      "answer",
 	}
@@ -152,4 +144,14 @@ func (s *ChatService) CreateAnswer(newData entities.Chat) (string, error) {
 		return "", err
 	}
 	return answer.Content, nil
+}
+
+func (s *ChatService) GetChatByEmail(email string) ([]entities.Chat, error) {
+	res, err := s.repo.GetChatByEmail(email)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
 }
