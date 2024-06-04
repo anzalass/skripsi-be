@@ -67,7 +67,7 @@ func main() {
 	pengaduanService := sPengaduan.NewPengaduanService(pengaduanRepo, pelangganRepo)
 	pengaduanHandler := hPengaduan.NewPengaduanHandler(pengaduanService)
 
-	chatRepository := rChat.NewChatbotRepository(database.ConnectMongoDB())
+	chatRepository := rChat.NewChatbotRepository(database.ConnectMongoDB(), db)
 	chatService := sChat.NewChatService(chatRepository, pelangganRepo)
 	ChatHandler := hChat.NewChatHandler(chatService)
 

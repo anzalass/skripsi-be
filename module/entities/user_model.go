@@ -7,9 +7,9 @@ import (
 )
 
 type AkunModel struct {
-	ID        uint64            `gorm:"column:id;type:BIGINT UNSIGNED;primaryKey" json:"id"`
-	IDUser    string            `gorm:"column:id_user;type:VARCHAR(255);unique" json:"id_user"`
-	User      UserModels        `gorm:"foreignKey:IDUser;references:ID" json:"user"`
+	ID     uint64 `gorm:"column:id;type:BIGINT UNSIGNED;primaryKey" json:"id"`
+	IDUser string `gorm:"column:id_user;type:VARCHAR(255);unique" json:"id_user"`
+	// User      UserModels        `gorm:"foreignKey:IDUser;references:ID" json:"user"`
 	Name      string            `gorm:"column:name;type:VARCHAR(255)" json:"name"`
 	Email     string            `gorm:"column:email;type:VARCHAR(255);unique" json:"email"`
 	Role      string            `gorm:"column:role;type:VARCHAR(20)" json:"role"`
@@ -26,6 +26,7 @@ type UserModels struct {
 	Alamat         string            `gorm:"column:alamat;type:TEXT" json:"alamat"`
 	PaketLangganan string            `gorm:"column:paket_langganan;type:VARCHAR(20)" json:"paket_langganan"`
 	HargaLangganan uint64            `gorm:"column:harga_langganan;type:BIGINT(30)" json:"harga_langganan"`
+	NoWhatsapp     string            `gorm:"column:no_whatsapp;type:VARCHAR(15);" json:"no_whatsapp"`
 	CreatedAt      time.Time         `gorm:"column:created_at;type:timestamp DEFAULT CURRENT_TIMESTAMP" json:"created_at"`
 	UpdatedAt      time.Time         `gorm:"column:updated_at;type:timestamp DEFAULT CURRENT_TIMESTAMP" json:"updated_at"`
 	DeletedAt      *time.Time        `gorm:"column:deleted_at;type:TIMESTAMP NULL;index" json:"deleted_at"`
@@ -103,15 +104,16 @@ type SnapUrl struct {
 }
 
 type Chat struct {
-	ID        primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
-	IdAkun    uint64             `json:"id_akun" form:"id_akun"`
-	IdUser    string             `json:"id_user" form:"id_user"`
-	Email     string             `json:"email" form:"email"`
-	Role      string             `json:"role" form:"role"`
-	Views     uint64             `json:"views" form:"views"`
-	Name      string             `json:"name" form:"name"`
-	Text      string             `json:"text" form:"text"`
-	CreatedAt time.Time          `json:"created_at" form:"created_at"`
+	ID         primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
+	IdAkun     uint64             `json:"id_akun" form:"id_akun"`
+	IdUser     string             `json:"id_user" form:"id_user"`
+	NoWhatsapp string             `json:"no_whatsapp" form:"no_whatsapp"`
+	Email      string             `json:"email" form:"email"`
+	Role       string             `json:"role" form:"role"`
+	Views      uint64             `json:"views" form:"views"`
+	Name       string             `json:"name" form:"name"`
+	Text       string             `json:"text" form:"text"`
+	CreatedAt  time.Time          `json:"created_at" form:"created_at"`
 }
 type ChatRequest struct {
 	ID        primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
@@ -151,6 +153,13 @@ type FaqModel struct {
 	DeletedAt *time.Time `gorm:"column:deleted_at;type:TIMESTAMP NULL;index" json:"deleted_at"`
 }
 
+type DatasetAi struct {
+	ID      uint64 `gorm:"column:id;type:BIGINT UNSIGNED;primaryKey" json:"id"`
+	Role    string `gorm:"column:role;type:TEXT" json:"role"`
+	Content string `gorm:"column:content;type:TEXT" json:"content"`
+	Tipe    string `gorm:"column:tipe;type:VARCHAR(50)" json:"tipe"`
+}
+
 func (UserModels) TableName() string {
 	return "users"
 }
@@ -176,4 +185,8 @@ func (AkunModel) TableName() string {
 
 func (FaqModel) TableName() string {
 	return "faqs"
+}
+
+func (DatasetAi) TableName() string {
+	return "datasets"
 }

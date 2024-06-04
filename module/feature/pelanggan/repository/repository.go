@@ -133,3 +133,11 @@ func (r *PelangganRepository) SetNullIdUser(iduser string) error {
 	}
 	return nil
 }
+
+func (r *PelangganRepository) GetNoWhatsApp(iduser string) (string, error) {
+	data := &entities.UserModels{}
+	if err := r.db.Where("id = ?", iduser).First(data).Error; err != nil {
+		return "error", err
+	}
+	return data.NoWhatsapp, nil
+}
