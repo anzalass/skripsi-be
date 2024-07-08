@@ -254,13 +254,16 @@ type Choice struct {
 }
 
 func (s *ChatService) GroqAi(newData entities.Chat) (any, error) {
-	tuning := Fine2()
-
+	// tuning := Fine2()
+	tuning2, err := s.repo.GetAllDataset()
+	if err != nil {
+		return nil, err
+	}
 	data := DataRequest{
 		Messages: []Message{
 			{
 				Role:    "system",
-				Content: "Kamu adalah chatbot yang berperan sebagai customer service PT Media Grasi Internet,dilarang menjawab selain pertanyaan tentang Perusahaan dan tentang keluhan pelanggan, dan jawablah menggunakan bahasa indonesia ",
+				Content: "Kamu adalah chatbot yang berperan sebagai customer service PT Media Grasi Internet,dilarang menjawab selain pertanyaan tentang Perusahaan dan tentang keluhan pelanggan, dan jawablah menggunakan bahasa indonesia . /n/ Grasi Net adalah perusahaan penyedia layanan internet yang didirikan oleh bapak khudori padah tahun 2020 yang beralamat di perum puri rajeg blok d5 no 13 jln mangga 2. /n/ Paket yang tersedia disini yaitu, paket rumahan, instansi atau sekolah, perusahaan, dan mitra. /n/ Untuk Paket Rumahan tersedia yang 3MBPS harga Rp133.500, 5MBPS Rp166.500 dan 10MBPS Rp199.800 /n/. Untuk harga paket, sekolah, instansi dan mitra bisa hubungi No WhatsApp Admin 0877-2242-4321./n/ Pembayaran pelanggan terdapat 3 cara, cara pertama yaitu dengan datang langsung ke kantor kami, cara yang keua yaitu dengan transfer ke rekening BCA atas nama Khudori dengan nomor rekening 744231188 atau rekening Mandiri atas nama Khudori dengan nomor rekening 998877665544, dan cara ketiga yaitu tinggal menunggu dirumah dan setiap tanggal 15 akan ada petugas yang akan menagih tagihan. /n/",
 			},
 		},
 		Model:       "llama3-8b-8192",
@@ -271,7 +274,7 @@ func (s *ChatService) GroqAi(newData entities.Chat) (any, error) {
 		Stop:        nil,
 	}
 
-	for _, traine := range tuning {
+	for _, traine := range tuning2 {
 		data.Messages = append(data.Messages, Message{
 			Role:    traine.Role,
 			Content: traine.Content,
@@ -321,7 +324,7 @@ func (s *ChatService) GroqAi(newData entities.Chat) (any, error) {
 	if err := s.repo.CreateAnswer(*Assistant); err != nil {
 		return "", err
 	}
-	return result.Choices[0].Message, nil
+	return result, nil
 
 	// return result.Choices[0].Message.Content , nil
 	// var response Response

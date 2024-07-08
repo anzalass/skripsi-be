@@ -5,6 +5,7 @@ import (
 	"testskripsi/module/entities"
 	"testskripsi/module/feature/pelanggan"
 	"testskripsi/module/feature/pelanggan/dto"
+	"testskripsi/utils"
 
 	"github.com/labstack/echo/v4"
 )
@@ -27,7 +28,11 @@ func (h *PelangganHandler) CreatePelanggan() echo.HandlerFunc {
 				"error": err,
 			})
 		}
-
+		if err := utils.ValidateStruct(pelangganRequest); err != nil {
+			return c.JSON(http.StatusBadRequest, map[string]any{
+				"error": err,
+			})
+		}
 		value := &entities.UserModels{
 			ID:             pelangganRequest.ID,
 			Name:           pelangganRequest.Name,
@@ -84,7 +89,14 @@ func (h *PelangganHandler) UpdatePelanggan() echo.HandlerFunc {
 
 		idparse := c.Param("id")
 
+		if err := utils.ValidateStruct(pelangganRequest); err != nil {
+			return c.JSON(http.StatusBadRequest, map[string]any{
+				"error": "data tidak boleh kosong",
+			})
+		}
+
 		value := &entities.UserModels{
+			ID:             idparse,
 			Name:           pelangganRequest.Name,
 			Status:         pelangganRequest.Status,
 			Alamat:         pelangganRequest.Alamat,
@@ -185,7 +197,7 @@ func (h *PelangganHandler) InsertIdUserByEmail() echo.HandlerFunc {
 		}
 
 		res, err := h.service.InsertIdUserByEmail(pelangganRequest.Email, pelangganRequest.IdUser)
-		if err != nil {
+		if res == false {
 			return c.JSON(http.StatusInternalServerError, map[string]any{
 				"message": "gagal",
 				"error":   err,

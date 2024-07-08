@@ -6,6 +6,7 @@ import (
 	"testskripsi/module/entities"
 	"testskripsi/module/feature/faq"
 	"testskripsi/module/feature/faq/dto"
+	"testskripsi/utils"
 
 	"github.com/labstack/echo/v4"
 )
@@ -26,6 +27,13 @@ func (h *FaqHandler) CreateFaq() echo.HandlerFunc {
 		if err := c.Bind(req); err != nil {
 			return c.JSON(http.StatusBadRequest, map[string]any{
 				"error": err,
+			})
+		}
+
+		if err := utils.ValidateStruct(req); err != nil {
+			return c.JSON(http.StatusBadRequest, map[string]any{
+				"error":   err,
+				"message": "input tidak boleh kososng",
 			})
 		}
 		value := &entities.FaqModel{
@@ -87,6 +95,12 @@ func (h *FaqHandler) UpdateFaqById() echo.HandlerFunc {
 		if err := c.Bind(req); err != nil {
 			return c.JSON(http.StatusBadRequest, map[string]any{
 				"error": err,
+			})
+		}
+		if err := utils.ValidateStruct(req); err != nil {
+			return c.JSON(http.StatusBadRequest, map[string]any{
+				"error":   err,
+				"message": "input tidak boleh kososng",
 			})
 		}
 		value := &entities.FaqModel{

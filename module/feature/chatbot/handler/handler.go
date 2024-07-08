@@ -8,6 +8,7 @@ import (
 	"testskripsi/module/entities"
 	"testskripsi/module/feature/chatbot"
 	"testskripsi/module/feature/chatbot/dto"
+	"testskripsi/utils"
 
 	"github.com/labstack/echo/v4"
 )
@@ -69,6 +70,23 @@ func (h *ChatHandler) CreateDataset() echo.HandlerFunc {
 		var result []any
 		var res any
 		var err error
+
+		if err = utils.ValidateStruct(req); err != nil {
+			if err := utils.ValidateStruct(req); err != nil {
+				return c.JSON(http.StatusBadRequest, map[string]any{
+					"error":   err,
+					"message": "input tidak boleh kososng",
+				})
+			}
+		}
+
+		if len(req.Request) < 2 {
+			return c.JSON(http.StatusBadRequest, map[string]any{
+				"error":   err,
+				"message": "input tidak boleh kososng",
+			})
+		}
+
 		for _, dto := range req.Request {
 			value := &entities.DatasetAi{
 				Role:    dto.Role,
@@ -95,6 +113,14 @@ func (h *ChatHandler) UpdateDatasetById() echo.HandlerFunc {
 		req := new(entities.DatasetAi)
 		if err := c.Bind(req); err != nil {
 			return c.JSON(http.StatusBadRequest, err)
+		}
+		if err := utils.ValidateStruct(req); err != nil {
+			if err := utils.ValidateStruct(req); err != nil {
+				return c.JSON(http.StatusBadRequest, map[string]any{
+					"error":   err,
+					"message": "input tidak boleh kososng",
+				})
+			}
 		}
 		value := &entities.DatasetAi{
 			Content: req.Content,

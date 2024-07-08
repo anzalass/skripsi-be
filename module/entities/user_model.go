@@ -154,9 +154,9 @@ type FaqModel struct {
 }
 
 type DatasetAi struct {
-	ID      uint64 `gorm:"column:id;type:BIGINT UNSIGNED;primaryKey" json:"id"`
+	ID      uint64 `gorm:"column:id;type:BIGINT UNSIGNED;primaryKey" json:"id" `
 	Role    string `gorm:"column:role;type:TEXT" json:"role"`
-	Content string `gorm:"column:content;type:TEXT" json:"content"`
+	Content string `gorm:"column:content;type:TEXT" json:"content" validate:"required"`
 	Tipe    string `gorm:"column:tipe;type:VARCHAR(50)" json:"tipe"`
 }
 

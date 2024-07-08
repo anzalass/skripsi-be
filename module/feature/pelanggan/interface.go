@@ -27,7 +27,7 @@ type ServicePelanggan interface {
 	GetAllPelanggan() ([]*entities.UserModels, error)
 	GetPelangganByID(id string) (*entities.UserModels, error)
 	GetAllDetailPelanggan(id string) (*entities.UserModels, error)
-	InsertIdUserByEmail(email string, iduser string) (*entities.AkunModel, error)
+	InsertIdUserByEmail(email string, iduser string) (bool, error)
 	CheckIdUserByEmail(email string) (string, error)
 }
 type HandlerPelanggan interface {
