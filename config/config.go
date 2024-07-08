@@ -17,6 +17,7 @@ type ProgramConfig struct {
 	DBName     string
 	Secret     string
 	OpenaiKey  string
+	GroqApiKey string
 	MongoDBUri string
 }
 
@@ -71,6 +72,9 @@ func loadConfig() *ProgramConfig {
 	}
 	if val, found := os.LookupEnv("OPENAIKEY"); found {
 		res.OpenaiKey = val
+	}
+	if val, found := os.LookupEnv("GROQAPIKEY"); found {
+		res.GroqApiKey = val
 	}
 	if val, found := os.LookupEnv("MONGODBURI"); found {
 		res.Secret = val

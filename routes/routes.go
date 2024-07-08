@@ -32,6 +32,14 @@ func RouteChat(e *echo.Echo, h chatbot.ChatHandlerInterface) {
 	e.POST("/answer", h.CreateAnswer())
 	e.POST("/question", h.CreateQuestion())
 	e.GET("/chat/:email", h.GetChatByEmail())
+	e.POST("/dataset", h.CreateDataset())
+	e.DELETE("/dataset/:id", h.DeleteDatasetById())
+	e.PUT("/dataset/:id", h.UpdateDatasetById())
+	e.GET("/dataset", h.GetAllDataset())
+	e.GET("/dataset/:id", h.GetDatasetById())
+	e.GET("/allchat", h.GetAllChat())
+	e.POST("/woi", h.GroqAi())
+	e.POST("/answergroqai", h.GroqAi2())
 
 }
 func RoutePelanggan(e *echo.Echo, h pelanggan.HandlerPelanggan) {

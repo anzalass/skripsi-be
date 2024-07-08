@@ -95,16 +95,21 @@ func (s *PelangganService) CheckIdUserByEmail(email string) (string, error) {
 	return res, nil
 }
 
-func (s *PelangganService) InsertIdUserByEmail(email string, iduser string) (*entities.AkunModel, error) {
+func (s *PelangganService) InsertIdUserByEmail(email string, iduser string) (bool, error) {
 	err := s.repo.SetNullIdUser(iduser)
 	if err != nil {
-		return nil, err
+		return true, err
 	}
 
-	res, err := s.repo.InsertIdUserByEmail(email, iduser)
-	if err != nil {
-		return nil, err
+	res2, _ := s.repo.GetPelangganByID(iduser)
+	if res2 != nil {
+		_, err := s.repo.InsertIdUserByEmail(email, iduser)
+		if err != nil {
+			return true, err
+		}
+	} else {
+		return false, err
 	}
 
-	return res, nil
+	return true, nil
 }

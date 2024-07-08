@@ -47,7 +47,7 @@ func main() {
 	e.Use(middleware.CORSWithConfig(corsConfig))
 
 	var db = database.InitDatabase()
-	database.Migrate(db)
+	// database.Migrate(db)
 	jwtUtils := utils.NewJWT("rahasia")
 	midtransUtils := midtrans.NewMidtrans()
 
@@ -67,7 +67,7 @@ func main() {
 	pengaduanService := sPengaduan.NewPengaduanService(pengaduanRepo, pelangganRepo)
 	pengaduanHandler := hPengaduan.NewPengaduanHandler(pengaduanService)
 
-	chatRepository := rChat.NewChatbotRepository(database.ConnectMongoDB())
+	chatRepository := rChat.NewChatbotRepository(database.ConnectMongoDB(), db)
 	chatService := sChat.NewChatService(chatRepository, pelangganRepo)
 	ChatHandler := hChat.NewChatHandler(chatService)
 

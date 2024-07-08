@@ -18,6 +18,7 @@ type RepositoryPelanggan interface {
 	InsertIdUserByEmail(email string, idakun string) (*entities.AkunModel, error)
 	CheckIdUserByEmail(email string) (string, error)
 	SetNullIdUser(iduser string) error
+	GetNoWhatsApp(iduser string) (string, error)
 }
 type ServicePelanggan interface {
 	CreatePelanggan(newData *entities.UserModels) (*entities.UserModels, error)
@@ -26,7 +27,7 @@ type ServicePelanggan interface {
 	GetAllPelanggan() ([]*entities.UserModels, error)
 	GetPelangganByID(id string) (*entities.UserModels, error)
 	GetAllDetailPelanggan(id string) (*entities.UserModels, error)
-	InsertIdUserByEmail(email string, iduser string) (*entities.AkunModel, error)
+	InsertIdUserByEmail(email string, iduser string) (bool, error)
 	CheckIdUserByEmail(email string) (string, error)
 }
 type HandlerPelanggan interface {
