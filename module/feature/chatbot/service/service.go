@@ -65,11 +65,11 @@ func (s *ChatService) CreateQuestion(newData entities.Chat) (*entities.Chat, err
 	iduser, _ := s.repouser.CheckIdUserByEmail(newData.Email)
 	nowa, _ := s.repouser.GetNoWhatsApp(iduser)
 
-	lengthchatperday, _ := s.repo.GetChatPerDay(iduser)
+	// lengthchatperday, _ := s.repo.GetChatPerDay(iduser)
 
-	if len(lengthchatperday) > 9 {
-		return nil, err
-	}
+	// if len(lengthchatperday) > 9 {
+	// 	return nil, err
+	// }
 
 	value := &entities.Chat{
 		IdAkun:     idakun,
